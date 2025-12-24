@@ -1,0 +1,8 @@
+= Overview
+:toc: auto
+
+Project overview and documentation hub.
+
+== License
+
+AGPL-3.0-or-later
