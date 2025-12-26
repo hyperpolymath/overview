@@ -1,8 +1,140 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 hyperpolymath
 = Overview
-:toc: auto
+:toc: preamble
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
 
-Project overview and documentation hub.
+Hub-and-spoke repository mirroring for multi-platform open source distribution.
+
+== What This Project Does
+
+This repository provides GitHub Actions infrastructure that automatically mirrors repositories to multiple Git hosting platforms, ensuring open source projects remain accessible across the ecosystem.
+
+=== Supported Forge Targets
+
+[cols="1,2,1"]
+|===
+|Platform |Domain |Status
+
+|GitLab
+|gitlab.com
+|✓ Implemented
+
+|Codeberg
+|codeberg.org
+|✓ Implemented
+
+|Bitbucket
+|bitbucket.org
+|✓ Implemented
+|===
+
+=== Workflow Components
+
+[horizontal]
+`mirror.yml`:: Primary hub-and-spoke mirroring workflow. Triggered on push to `main`/`master`. Syncs all branches and tags to enabled targets.
+
+`instant-sync.yml`:: Forge propagation trigger. Dispatches to private farm repository for coordinated multi-repo distribution.
+
+== Architecture
+
+----
+                    ┌─────────────────┐
+                    │     GitHub      │
+                    │  (Hub/Primary)  │
+                    └────────┬────────┘
+                             │
+              push to main/master
+                             │
+         ┌───────────────────┼───────────────────┐
+         ▼                   ▼                   ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│     GitLab      │ │    Codeberg     │ │    Bitbucket    │
+│    (Spoke)      │ │    (Spoke)      │ │    (Spoke)      │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+----
+
+== Security Model
+
+This infrastructure implements defense-in-depth security practices:
+
+=== Supply Chain Hardening
+
+* **SHA-pinned Actions** — All GitHub Actions pinned to commit SHAs, not version tags
+* **Minimal Permissions** — Workflows use `permissions: read-all` by default
+* **Conditional Execution** — Mirror jobs only run when explicitly enabled
+
+=== SSH Security
+
+* **Host Key Verification** — SSH known hosts verified to prevent MITM attacks
+* **Ed25519 Keys** — Modern elliptic curve cryptography for all connections
+* **Secrets Isolation** — Private keys stored in GitHub organization secrets
+
+=== Operational Security
+
+* **Concurrency Controls** — Prevents race conditions during parallel runs
+* **No Secret Logging** — Secrets never echoed or logged
+* **Isolated Jobs** — Each mirror target runs in its own job context
+
+See link:SECURITY.md[SECURITY.md] for vulnerability reporting and detailed security configuration.
+
+== Quick Start
+
+=== 1. Generate SSH Keys
+
+[source,bash]
+----
+# Generate ed25519 keys for each platform
+ssh-keygen -t ed25519 -C "github-mirror-gitlab" -f gitlab_mirror_key
+ssh-keygen -t ed25519 -C "github-mirror-codeberg" -f codeberg_mirror_key
+ssh-keygen -t ed25519 -C "github-mirror-bitbucket" -f bitbucket_mirror_key
+----
+
+=== 2. Configure Platforms
+
+Add public keys to each platform:
+
+* **GitLab**: Settings → SSH Keys
+* **Codeberg**: Settings → SSH/GPG Keys
+* **Bitbucket**: Personal Settings → SSH Keys
+
+=== 3. Store Secrets in GitHub
+
+Add private keys as organization secrets:
+
+* `GITLAB_SSH_KEY`
+* `CODEBERG_SSH_KEY`
+* `BITBUCKET_SSH_KEY`
+
+=== 4. Enable Mirrors
+
+Set organization or repository variables:
+
+[source]
+----
+GITLAB_MIRROR_ENABLED=true
+CODEBERG_MIRROR_ENABLED=true
+BITBUCKET_MIRROR_ENABLED=true
+----
+
+=== 5. Create Target Repositories
+
+Create empty repositories with matching names under the `hyperpolymath` namespace on each target platform.
+
+== Roadmap
+
+See link:ROADMAP.adoc[ROADMAP.adoc] for planned enhancements and future direction.
 
 == License
 
 AGPL-3.0-or-later
+
+== Contributing
+
+Contributions welcome. Please ensure PRs:
+
+. Maintain or improve security posture
+. Keep action versions pinned to commit SHAs
+. Update documentation as needed
