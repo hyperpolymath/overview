@@ -86,7 +86,7 @@ See [SECURITY.md](SECURITY.md) for:
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for planned features and improvements.
+See [ROADMAP.adoc](ROADMAP.adoc) for planned features and improvements.
 
 ## License
 

@@ -1,0 +1,125 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 hyperpolymath
+= Roadmap
+:toc: preamble
+:toclevels: 2
+
+Development roadmap for the Overview hub-and-spoke mirroring infrastructure.
+
+== Current State (v1.0)
+
+[cols="1,3"]
+|===
+|Component |Status
+
+|Hub-and-spoke mirroring
+|✓ Complete — GitLab, Codeberg, Bitbucket
+
+|Instant forge sync
+|✓ Complete — Automatic propagation on push/release
+
+|SSH host verification
+|✓ Complete — MITM protection with ed25519 keys
+
+|Supply chain security
+|✓ Complete — SHA-pinned actions, minimal permissions
+
+|Security documentation
+|✓ Complete — SECURITY.md with procedures
+|===
+
+== Phase 1: Platform Expansion
+
+=== Additional Forge Targets
+
+* SourceHut (sr.ht)
+* Gitea self-hosted instances
+* Forgejo instances
+* Radicle (peer-to-peer Git)
+
+=== Protocol Support
+
+* Native Git protocol where SSH unavailable
+* HTTPS token authentication fallback
+* GPG commit signing propagation
+
+== Phase 2: Operational Hardening
+
+=== Monitoring & Observability
+
+* Sync status dashboard via GitHub Pages
+* Failure notifications (email, webhook)
+* Sync lag metrics and alerting
+* Audit logging for compliance
+
+=== Resilience
+
+* Automatic retry with exponential backoff
+* Partial failure handling (continue if one target fails)
+* Self-healing on transient network issues
+* Dead letter queue for failed syncs
+
+== Phase 3: Advanced Distribution
+
+=== Selective Mirroring
+
+* Branch filtering (mirror only release branches)
+* Tag pattern matching
+* Repository allowlist/blocklist
+* Per-repo target overrides
+
+=== Release Automation
+
+* Changelog generation across forges
+* Release asset mirroring
+* Platform-specific release notes
+* Attestation propagation (SLSA, Sigstore)
+
+== Phase 4: Federation & Decentralization
+
+=== Multi-Hub Architecture
+
+* Secondary hub failover
+* Bidirectional sync (limited)
+* Conflict detection and alerting
+
+=== Decentralized Options
+
+* IPFS/Filecoin archival
+* Radicle integration for p2p distribution
+* Self-sovereign identity for contributors
+
+== Phase 5: Ecosystem Integration
+
+=== Hyperpolymath Alignment
+
+* STATE.scm metadata files
+* META.scm project descriptors
+* ECOSYSTEM.scm dependency graphs
+* Guix/Nix reproducible builds
+
+=== Tooling
+
+* CLI for manual sync operations
+* API for programmatic control
+* Web dashboard for org-wide visibility
+
+== Non-Goals
+
+The following are explicitly out of scope:
+
+* Two-way sync with conflict resolution
+* Issue/PR mirroring (different per-forge semantics)
+* Wiki mirroring
+* CI/CD pipeline mirroring
+
+== Contributing
+
+Roadmap items are prioritized based on:
+
+. Security impact
+. Operational reliability
+. User demand
+. Implementation complexity
+
+To propose additions, open an issue with the `roadmap` label.
